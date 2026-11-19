@@ -17,7 +17,10 @@
     "test": "node scripts/test-auth.js && node scripts/test-catalog.js && node scripts/test-seller.js && node scripts/test-orders.js",
     "test:seller": "node scripts/test-seller.js",
     "test:orders": "node scripts/test-orders.js",
-    "breakit": "node scripts/breakit.js"
+    "breakit": "node scripts/breakit.js",
+    "build": "npm --prefix web install && npm --prefix web run build",
+    "local": "npm install && npm run seed && npm run build && npm start",
+    "dev:web": "npm --prefix web run dev"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

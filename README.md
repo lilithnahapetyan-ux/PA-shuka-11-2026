@@ -5,13 +5,20 @@ Cash on delivery, prices in AMD. One Node.js process, one SQLite file.
 
 ## Run locally
 
+One command — installs, seeds demo data, builds the site and starts it on http://localhost:3000:
+
 ```bash
-npm install
-npm run seed        # deletes data/, migrates, fills demo data and images (~10 s)
-npm run dev         # API on http://localhost:3000 (restarts on file changes)
+npm run local
 ```
 
-Check it: http://localhost:3000/api/health → `{"ok":true}`
+While developing, use two terminals (the site reloads as you edit):
+
+```bash
+npm run dev         # API on http://localhost:3000, restarts on file changes
+npm run dev:web     # site on http://localhost:5173, proxies /api and /uploads to :3000
+```
+
+`npm run seed` rebuilds the demo database at any time (deletes data/ first).
 
 ## Tests
 
@@ -93,6 +100,24 @@ placed ──▶ confirmed ──▶ shipped ──▶ delivered
 | 7 | Double checkout | random request key, `UNIQUE (request_key)`, a repeat returns the existing order |
 | 8 | Broken references | `PRAGMA foreign_keys = ON`; products are unpublished, never deleted (`ON DELETE RESTRICT`) |
 | 9 | Images | type checked by decoding, 8 MB limit, resized to thumb + large WebP, files on disk, path in SQLite |
+
+## Frontend
+
+React + Vite in `web/`. English and Armenian (switch in the header, remembered per browser).
+Fonts are bundled: Bricolage Grotesque (Latin) and Noto Sans Armenian.
+The page only calls relative URLs (`/api/...`, `/uploads/...`), so the session cookie is first-party
+both locally (Vite proxy) and in production (Netlify proxy).
+
+```
+web/src/
+  api.js           fetch wrapper → ApiError { code, message, fields, items }
+  i18n.jsx         en/hy dictionaries, ֏ and date formatting, Armenian error messages
+  session.jsx      signed-in user and cart count
+  validate.js      client-side checks mirroring the server's
+  components/      Layout (header, seller nav), ProductCard, ui (Field, Price, Stars, ...)
+  pages/           Home, Search, Product, Cart, Checkout, Orders, Auth
+  pages/seller/    Overview, Products, ProductEditor, Orders
+```
 
 ## Layout
 

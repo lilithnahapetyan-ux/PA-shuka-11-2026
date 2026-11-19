@@ -1,4 +1,6 @@
 // Builds the Express app. index.js starts it; tests can import it too.
+import fs from 'node:fs';
+import path from 'node:path';
 import express from 'express';
 import cookieParser from 'cookie-parser';
 import { UPLOADS_DIR } from './config.js';
@@ -40,6 +42,16 @@ export function createApp() {
   api.use((_req, _res, next) => next(notFound('No such endpoint.')));
 
   app.use('/api', api);
+
+  // The built frontend (web/dist), when present: one process serves the whole product
+  // locally (npm run build && npm start). In production Netlify serves it instead.
+  const dist = path.resolve('web/dist');
+  if (fs.existsSync(path.join(dist, 'index.html'))) {
+    app.use(express.static(dist, { index: false, maxAge: '1h' }));
+    // Any other GET is a page of the app (e.g. /products/12): send index.html.
+    app.get(/^\/(?!api\/|uploads\/).*/, (_req, res) => res.sendFile(path.join(dist, 'index.html')));
+  }
+
   app.use(errorHandler);
   return app;
 }
