@@ -8,9 +8,12 @@
   },
   "scripts": {
     "migrate": "node server/migrate.js",
+    "seed": "node scripts/seed.js",
     "check:db": "node scripts/check-db.js"
   },
   "dependencies": {
-    "better-sqlite3": "^13.2.0"
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^13.2.0",
+    "sharp": "^0.35.5"
   }
 }
