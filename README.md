@@ -1,6 +1,6 @@
 # Shuka — Amazon-style marketplace
 
-## Run locally (so far: database + demo data)
+## Run locally (so far: database, demo data, accounts API)
 
 ```bash
 npm install
@@ -8,7 +8,29 @@ npm run seed        # deletes data/, migrates, fills demo data and images (~10 s
 npm run check:db    # verifies pragmas, 10 STRICT tables, constraints, FK enforcement
 ```
 
+Start the API (restarts on file changes):
+
+```bash
+npm run dev         # http://localhost:3000/api/health
+```
+
+Tests (each seeds its own database in data/test/, your data/shuka.db is untouched):
+
+```bash
+npm run test:auth
+```
+
 `npm run migrate` alone applies new migrations without touching existing data.
+
+## Environment variables
+
+| Name | Local default | Production |
+|---|---|---|
+| `PORT` | 3000 | set by Render |
+| `DB_PATH` | data/shuka.db | on the persistent disk, e.g. /var/data/shuka.db |
+| `UPLOADS_DIR` | data/uploads | on the persistent disk, e.g. /var/data/uploads |
+| `SESSION_SECRET` | a dev-only value | **required**, 32+ random characters |
+| `NODE_ENV` | (unset) | production |
 
 ## Demo accounts
 
@@ -28,7 +50,13 @@ The seed refuses to run with `NODE_ENV=production` unless `--force` is passed.
 
 ```
 server/
-  config.js              DB_PATH and UPLOADS_DIR from environment variables
+  index.js               entry point: migrate, then listen
+  app.js                 Express app: JSON, cookies, /uploads, /api routes, errors
+  config.js              all environment variables
+  errors.js              ApiError + the one error shape { error: { code, message } }
+  validate.js            field validators (email, password, name, phone)
+  auth.js                signed httpOnly session cookie, requireAuth, requireSeller
+  routes/auth.js         /auth/register, /auth/login, /auth/logout, /me
   db.js                  single SQLite connection: WAL, busy_timeout 5000, foreign_keys ON
   migrate.js             applies numbered .sql files, version kept in PRAGMA user_version
   images.js              resize to -thumb.webp / -large.webp, save in UPLOADS_DIR
@@ -37,5 +65,7 @@ scripts/
   seed.js                rebuilds the demo database from nothing
   seed-data.js           categories, users, 43 products, orders, reviews
   check-db.js            Step 1 checks (all run in a rolled-back transaction)
+  test-auth.js           Step 3 checks against a real running server
+  lib/harness.js         test helpers: seed test DB, start server, cookie-keeping client
 data/                    local database and uploads (git-ignored)
 ```
