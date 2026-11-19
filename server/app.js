@@ -6,6 +6,12 @@ import { errorHandler, notFound } from './errors.js';
 import { loadUser } from './auth.js';
 import authRoutes from './routes/auth.js';
 import catalogRoutes from './routes/catalog.js';
+import sellerRoutes from './routes/seller.js';
+import sellerImageRoutes from './routes/sellerImages.js';
+import sellerOrderRoutes from './routes/sellerOrders.js';
+import cartRoutes from './routes/cart.js';
+import orderRoutes from './routes/orders.js';
+import reviewRoutes from './routes/reviews.js';
 
 export function createApp() {
   const app = express();
@@ -24,6 +30,12 @@ export function createApp() {
   api.get('/health', (_req, res) => res.json({ ok: true }));
   api.use(authRoutes);
   api.use(catalogRoutes);
+  api.use(sellerRoutes);
+  api.use(sellerImageRoutes);
+  api.use(sellerOrderRoutes);
+  api.use(cartRoutes);
+  api.use(orderRoutes);
+  api.use(reviewRoutes);
   // Any /api path nobody handled: JSON 404, not an HTML page.
   api.use((_req, _res, next) => next(notFound('No such endpoint.')));
 

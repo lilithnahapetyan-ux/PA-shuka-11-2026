@@ -12,6 +12,27 @@ import { UPLOADS_DIR } from './config.js';
 export const THUMB_SIZE = 400;
 export const LARGE_SIZE = 1200;
 
+export const MAX_IMAGES = 5;
+export const MAX_UPLOAD_MB = 8;
+const ALLOWED_FORMATS = new Set(['jpeg', 'png', 'webp']);
+const MIN_SIDE = 200;
+
+/**
+ * Checks what a file really is by decoding it, not by trusting its name or MIME type,
+ * so a renamed .exe is caught. Returns an error message, or null if the image is usable.
+ */
+export async function inspectImage(buffer) {
+  let meta;
+  try {
+    meta = await sharp(buffer, { failOn: 'error' }).metadata();
+  } catch {
+    return 'This file is not an image. Use a JPEG, PNG or WebP photo.';
+  }
+  if (!ALLOWED_FORMATS.has(meta.format)) return 'Use a JPEG, PNG or WebP photo.';
+  if (Math.min(meta.width, meta.height) < MIN_SIDE) return `Use a photo at least ${MIN_SIDE} × ${MIN_SIDE} pixels.`;
+  return null;
+}
+
 /** Resize `input` (Buffer or file path) and write both versions. Returns the key. */
 export async function saveProductImage(input, productId) {
   const key = `products/${productId}/${crypto.randomBytes(8).toString('hex')}`;

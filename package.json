@@ -14,13 +14,17 @@
     "check:db": "node scripts/check-db.js",
     "test:auth": "node scripts/test-auth.js",
     "test:catalog": "node scripts/test-catalog.js",
-    "test": "node scripts/test-auth.js && node scripts/test-catalog.js"
+    "test": "node scripts/test-auth.js && node scripts/test-catalog.js && node scripts/test-seller.js && node scripts/test-orders.js",
+    "test:seller": "node scripts/test-seller.js",
+    "test:orders": "node scripts/test-orders.js",
+    "breakit": "node scripts/breakit.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.2.0",
     "cookie-parser": "^1.4.7",
     "express": "^5.3.0",
+    "multer": "^2.5.0",
     "sharp": "^0.35.5"
   }
 }
