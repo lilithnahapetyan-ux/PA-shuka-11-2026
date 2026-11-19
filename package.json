@@ -12,7 +12,9 @@
     "migrate": "node server/migrate.js",
     "seed": "node scripts/seed.js",
     "check:db": "node scripts/check-db.js",
-    "test:auth": "node scripts/test-auth.js"
+    "test:auth": "node scripts/test-auth.js",
+    "test:catalog": "node scripts/test-catalog.js",
+    "test": "node scripts/test-auth.js && node scripts/test-catalog.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

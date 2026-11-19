@@ -1,6 +1,6 @@
 # Shuka — Amazon-style marketplace
 
-## Run locally (so far: database, demo data, accounts API)
+## Run locally (so far: database, demo data, accounts and catalog API)
 
 ```bash
 npm install
@@ -17,7 +17,9 @@ npm run dev         # http://localhost:3000/api/health
 Tests (each seeds its own database in data/test/, your data/shuka.db is untouched):
 
 ```bash
-npm run test:auth
+npm test             # all suites
+npm run test:auth    # accounts, sessions, error shape
+npm run test:catalog # categories, search, filters, sort, pages, product page, reviews
 ```
 
 `npm run migrate` alone applies new migrations without touching existing data.
@@ -57,6 +59,7 @@ server/
   validate.js            field validators (email, password, name, phone)
   auth.js                signed httpOnly session cookie, requireAuth, requireSeller
   routes/auth.js         /auth/register, /auth/login, /auth/logout, /me
+  routes/catalog.js      /categories, /products (search, filters, sort, pages), /products/:id, reviews
   db.js                  single SQLite connection: WAL, busy_timeout 5000, foreign_keys ON
   migrate.js             applies numbered .sql files, version kept in PRAGMA user_version
   images.js              resize to -thumb.webp / -large.webp, save in UPLOADS_DIR
@@ -66,6 +69,7 @@ scripts/
   seed-data.js           categories, users, 43 products, orders, reviews
   check-db.js            Step 1 checks (all run in a rolled-back transaction)
   test-auth.js           Step 3 checks against a real running server
+  test-catalog.js        Step 4 checks
   lib/harness.js         test helpers: seed test DB, start server, cookie-keeping client
 data/                    local database and uploads (git-ignored)
 ```
